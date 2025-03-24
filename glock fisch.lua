@@ -1,78 +1,88 @@
--- Create the GUI
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "Glock.Lol Fisch"
-ScreenGui.Parent = game.Players.LocalPlayer.PlayerGui
+-- Glock.lol Fisch Script for Roblox Fisch Game
+-- This script automates fishing and provides an advanced GUI
 
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 200, 0, 100)
-Frame.Position = UDim2.new(0.5, -100, 0.5, -50)
-Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-Frame.Parent = ScreenGui
+local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
 
-local Label = Instance.new("TextLabel")
-Label.Size = UDim2.new(1, 0, 0.3, 0)
-Label.Text = "Glock.Lol Fisch - Auto Reels & Auto Shakes"
-Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-Label.BackgroundTransparency = 1
-Label.Parent = Frame
+-- GUI Setup
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+gui.Name = "GlockFischGui"
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-local AutoReelButton = Instance.new("TextButton")
-AutoReelButton.Size = UDim2.new(1, 0, 0.3, 0)
-AutoReelButton.Position = UDim2.new(0, 0, 0.3, 0)
-AutoReelButton.Text = "Toggle Auto Reel"
-AutoReelButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-AutoReelButton.Parent = Frame
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 300, 0, 200)
+frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 2
+frame.BorderColor3 = Color3.fromRGB(50, 50, 50)
+frame.BackgroundTransparency = 0.3
 
-local AutoShakeButton = Instance.new("TextButton")
-AutoShakeButton.Size = UDim2.new(1, 0, 0.3, 0)
-AutoShakeButton.Position = UDim2.new(0, 0, 0.6, 0)
-AutoShakeButton.Text = "Toggle Auto Shake"
-AutoShakeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
-AutoShakeButton.Parent = Frame
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0.15, 0)
+title.BackgroundTransparency = 1
+title.Text = "Glock.lol Fisch"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 22
+title.TextAlign = Enum.TextAlign.Center
 
--- Variables for auto reel and auto shake
-local autoReelEnabled = false
-local autoShakeEnabled = false
+-- Auto-Fish Button
+local autoFishButton = Instance.new("TextButton", frame)
+autoFishButton.Size = UDim2.new(0.8, 0, 0.2, 0)
+autoFishButton.Position = UDim2.new(0.5, -150, 0.3, 0)
+autoFishButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+autoFishButton.Text = "Start Auto-Fish"
+autoFishButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+autoFishButton.TextSize = 20
 
--- Function to handle auto reel
-local function toggleAutoReel()
-    autoReelEnabled = not autoReelEnabled
-    if autoReelEnabled then
-        AutoReelButton.Text = "Auto Reel: ON"
-    else
-        AutoReelButton.Text = "Auto Reel: OFF"
-    end
-end
+-- Auto-Reel Button
+local autoReelButton = Instance.new("TextButton", frame)
+autoReelButton.Size = UDim2.new(0.8, 0, 0.2, 0)
+autoReelButton.Position = UDim2.new(0.5, -150, 0.6, 0)
+autoReelButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+autoReelButton.Text = "Start Auto-Reel"
+autoReelButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+autoReelButton.TextSize = 20
 
--- Function to handle auto shake
-local function toggleAutoShake()
-    autoShakeEnabled = not autoShakeEnabled
-    if autoShakeEnabled then
-        AutoShakeButton.Text = "Auto Shake: ON"
-    else
-        AutoShakeButton.Text = "Auto Shake: OFF"
-    end
-end
-
--- Connect buttons to functions
-AutoReelButton.MouseButton1Click:Connect(toggleAutoReel)
-AutoShakeButton.MouseButton1Click:Connect(toggleAutoShake)
-
--- Main loop for auto reel and auto shake
-local function mainLoop()
+-- Function to start auto-fishing
+local function startAutoFish()
+    -- Assuming fishing mechanics are triggered by clicking at a specific spot
     while true do
-        wait(0.1) -- Wait a small amount of time between checks
-        if autoReelEnabled then
-            -- Add code for automatic reeling action here
-            print("Auto Reeling...")
+        -- If fishing rod is in hand, click on the fishing spot automatically
+        if player.Character and player.Character:FindFirstChild("FishingRod") then
+            -- Click the fishing spot
+            local fishingSpot = workspace:FindFirstChild("FishingSpot")
+            if fishingSpot then
+                mouse.Hit = fishingSpot.CFrame
+                mouse.Button1Down:Fire()
+                wait(1)  -- Wait for the fishing action to process
+            end
         end
-
-        if autoShakeEnabled then
-            -- Add code for automatic shaking action here
-            print("Auto Shaking...")
-        end
+        wait(2)  -- Wait before reattempting
     end
 end
 
--- Start the main loop
-spawn(mainLoop)
+-- Function to start auto-reeling
+local function startAutoReel()
+    -- Check for reel action
+    while true do
+        -- If the reel button is available, simulate clicking it
+        local reelButton = player.PlayerGui:FindFirstChild("ReelButton")
+        if reelButton then
+            reelButton.MouseButton1Click:Fire()
+        end
+        wait(2)  -- Adjust the time to make it seem like a natural reel
+    end
+end
+
+-- Button functionality
+autoFishButton.MouseButton1Click:Connect(function()
+    autoFishButton.Text = "Auto-Fish Active"
+    autoFishButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+    startAutoFish()
+end)
+
+autoReelButton.MouseButton1Click:Connect(function()
+    autoReelButton.Text = "Auto-Reel Active"
+    autoReelButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+    startAutoReel()
+end)
